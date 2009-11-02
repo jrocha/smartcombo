@@ -1,13 +1,19 @@
 /*globals YUI*/
-YUI().use('widget', 'node', 'event-key', function(Y) {
+YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
 
 	function SmartCombo(config) {
 		SmartCombo.superclass.constructor.apply(this, arguments);
+
 		this.currentFilter = '';
 		this.data = config.data;
+	
+		this.searchBox = config.value.preInput;
+		this.resultBox =  config.value.preResult;
+
+		this.resultBoxVisible = true;
 	}
 
 	SmartCombo.NAME = "smartcombo";
@@ -26,9 +32,16 @@ YUI().use('widget', 'node', 'event-key', function(Y) {
      */
     SmartCombo.HTML_PARSER = {
         value: function (contentBox) {
-			console.log(arguments);
-            var node = contentBox.one("." + SmartCombo.INPUT_CLASS);
-            return (node) ? parseInt(node.get("value")) : null;
+            var nodeInput = contentBox.one("." + SmartCombo.INPUT_CLASS);
+            var nodeResult = contentBox.one("." + SmartCombo.RESULT_CONTAINER_CLASS);
+	    
+	    var preExisting = {
+		   preInput: nodeInput,
+	           preResultBox: nodeResult
+
+	    };
+
+	    return preExisting;
         }
     };
 
@@ -60,21 +73,24 @@ YUI().use('widget', 'node', 'event-key', function(Y) {
          *
          */
 		renderUI: function() {
-			var contentBox = this.get('contentBox'),
-				input = contentBox.one("." + SmartCombo.INPUT_CLASS),
-				resultdiv = contentBox.one("." + SmartCombo.RESULT_CONTAINER_TEMPLATE);
-			if (!input) {
-				input = Node.create(SmartCombo.INPUT_TEMPLATE);
-				contentBox.appendChild(input);
+			var contentBox = this.get('contentBox');
+
+			if (!this.searchBox) {
+				this.searchBox = Node.create(SmartCombo.INPUT_TEMPLATE);
+				contentBox.appendChild(this.searchBox);
 			}
 
-			if (!resultdiv) {
-				resultdiv = Node.create(SmartCombo.RESULT_CONTAINER_TEMPLATE);
-				contentBox.appendChild(resultdiv);
+			if (!this.resultBox) {
+				this.resultBox = Node.create(SmartCombo.RESULT_CONTAINER_TEMPLATE);
+				contentBox.appendChild(this.resultBox);
 			}
 
-			this.searchBox = input;
-			this.resultBox = resultdiv;
+
+			this._animHide = new Y.Anim({
+				node: this.resultBox,
+				to: { height: 0 },
+				easing: Y.Easing.backIn
+			});
 		},
 		bindUI: function() {
 			Y.on('click', this._handleClick, this.resultBox, this);
@@ -88,8 +104,8 @@ YUI().use('widget', 'node', 'event-key', function(Y) {
 			buffer[buffer.length] = '<ol>';
 			for (var i = 0, k = this.data.length; i < k; i += 1) { //TODO: if should be before the iteration for performance  
 				if (this.data[i].label.indexOf(this.currentFilter) > -1 || '' == this.currentFilter) {
-					buffer[buffer.length] = '<li id=' + i + '>';
-					if (this.data[i].checked !== 0) {
+					buffer[buffer.length] = '<li id="i' + i + '">';
+					if (this.data[i].checked) {
 						buffer[buffer.length] = '> ';
 					} else {
 						buffer[buffer.length] = '_ ';
@@ -112,12 +128,25 @@ YUI().use('widget', 'node', 'event-key', function(Y) {
 		_findItem: function(o) {
 			var i; //TODO: plese check this. I think there is a better way to bind JSON and DOM
 			i = o.target.get('id');
-			return this.data[i];
+			return this.data[i.slice(1)]; // remove the 'i' from the id
 		},
 		_handleTyping: function(o) { //TODO: WTF 'this' is comming wrong????
 			arguments[1].currentFilter = o.target.get('value');
+
 			arguments[1]._renderItens();
+
+			if (arguments[1].currentFilter.length > 0 && !arguments[1].resultBoxVisible) { 
+				this.resultBoxVisible = true;
+			}
+
+			if (0 == arguments[1].currentFilter.length && arguments[1].resultBoxVisible) {
+				arguments[1].resultBoxVisible = false;
+				console.log('hiding');
+				arguments[1]._animHide.run();
+			}
+
 		}
+			       
 	});
 	var myData = [{
 		label: 'item 1',
@@ -133,7 +162,7 @@ YUI().use('widget', 'node', 'event-key', function(Y) {
 	// the HTML el in which the combo will be deplyed is
 	// mandatory therefore it shouldn't be inside the obj
 	var mySmartCombo = new SmartCombo({
-		contenttBox: '#core-control',
+		contentBox: '#core-control',
 		data: myData
 	});
 	mySmartCombo.render();
