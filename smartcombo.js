@@ -1,5 +1,5 @@
 /*globals YUI*/
-YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
+YUI().use('widget', 'node','node-menunav', 'event-key', 'anim', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
@@ -86,6 +86,9 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 				contentBox.appendChild(this.resultBox);
 			}
 
+			contentBox.addClass('yui-menu');
+			this.resultBox.addClass('yui-menu-content');
+
 
 			this._animHide = new Y.Anim({
 				node: this.resultBox,
@@ -100,23 +103,24 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 		},
 		syncUI: function() {
 			this._renderItens();
+			this.get('contentBox').plug(Y.Plugin.NodeMenuNav); // need to plug NodeMenuNav every time since we render inner contents every time.
 		},
 		_getHtml: function() {
 			var buffer = [];
-			buffer[buffer.length] = '<ol>';
+			buffer[buffer.length] = '<ul><li class="yui-menuitem">';
 			for (var i = 0, k = this.data.length; i < k; i += 1) { //TODO: if should be before the iteration for performance  
 				if (this.data[i].label.indexOf(this.currentFilter) > -1 || '' == this.currentFilter) {
-					buffer[buffer.length] = '<li id="i' + i + '">';
+					buffer[buffer.length] = '<a class="yui-menuitem-content" id="i' + i + '">';
 					if (this.data[i].checked) {
 						buffer[buffer.length] = '> ';
 					} else {
 						buffer[buffer.length] = '_ ';
 					}
 					buffer[buffer.length] = this.data[i].label;
-					buffer[buffer.length] = '</li>';
+					buffer[buffer.length] = '</a>';
 				}
 			}
-			buffer[buffer.length] = '</ol>';
+			buffer[buffer.length] = '</li></ul>';
 			return buffer.join('');
 		},
 		_handleClick: function(o) {
@@ -126,6 +130,7 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 		},
 		_renderItens: function() {
 			Y.one(this.resultBox).set('innerHTML', this._getHtml());
+			
 		},
 		_findItem: function(o) {
 			var i; //TODO: plese check this. I think there is a better way to bind JSON and DOM
