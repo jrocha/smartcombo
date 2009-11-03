@@ -9,6 +9,11 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 
 		this.currentFilter = '';
 		this.data = config.data;
+
+		this.showSelectedOnly = config.showSelectedOnly;
+		this.showSelectedOnlyFilter = config.showSelectedOnlyFilter;
+
+		this.showClearSelectionFilter = config.showClearSelectionFilter;
 	
 		this.searchBox = config.value.preInput;
 		this.resultBox =  config.value.preResult;
@@ -39,11 +44,11 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
             var nodeInput = contentBox.one("." + SmartCombo.INPUT_CLASS);
             var nodeResult = contentBox.one("." + SmartCombo.RESULT_CONTAINER_CLASS);
 	    
-	    var preExisting = {
-		   preInput: nodeInput,
-	           preResultBox: nodeResult
+			var preExisting = {
+			   preInput: nodeInput,
+			   preResultBox: nodeResult
 
-	    };
+			};
 
 	    return preExisting;
         }
@@ -108,9 +113,29 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 				searchFilter = new RegExp(this.currentFilter, 'gi'); //TODO: need to escape this.currentFilter before apply RegExp
 
 			buffer[buffer.length] = '<ul>';
+
+			if (this.showSelectedOnlyFilter || this.showSelectedOnly) {
+				buffer[buffer.length] = '<li id="selectedOnlyFilter" class="';
+				if (this.showSelectedOnly) {
+					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_SELECTED_CLASS;
+				} else {
+					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS;
+				}
+				buffer[buffer.length] = '">Show selected only</li>';
+			}
+
+
+			if (this.showClearSelectionFilter) {
+				buffer[buffer.length] = '<li id="clearSelectionFilter" class="';
+					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS;
+				buffer[buffer.length] = '">Clear selection</li>';
+			}
+
+			buffer[buffer.length] = '<hr />'
+
 			for (var i = 0, k = this.data.length; i < k; i += 1) { //TODO: if should be before the iteration for performance  
 				
-				if (searchFilter.test(this.data[i].label)) {
+				if (searchFilter.test(this.data[i].label) && ( !this.showSelectedOnly || this.data[i].checked ) ) {
 					buffer[buffer.length] = '<li id="i' + i + '" class="';
 					if (this.data[i].checked) {
 						buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_SELECTED_CLASS;
@@ -127,18 +152,33 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 			return buffer.join('');
 		},
 		_handleClick: function(o) {
-			var item = this._findItem(o);
-			item.checked = !item.checked;
+			var clickedId = o.target.get('id'),
+				clickedItem;
+
+
+			if ('selectedOnlyFilter' == clickedId) { // action to control
+				this.showSelectedOnly = !this.showSelectedOnly;
+			} else if ('clearSelectionFilter' == clickedId) {
+				this._unselectItens();
+			} else if ('i' == clickedId[0]) {
+				clickedItem = this._findItem(clickedId);
+				clickedItem.checked = !clickedItem.checked;
+			}
+
+
 			this._renderItens();
+		},
+		_unselectItens: function() {
+			for (var i = 0, max = this.data.length; i < max; i += 1) {
+				this.data[i].checked = false;
+			}
 		},
 		_renderItens: function() {
 			Y.one(this.resultBox).set('innerHTML', this._getHtml());
 			
 		},
-		_findItem: function(o) {
-			var i; //TODO: plese check this. I think there is a better way to bind JSON and DOM
-			i = o.target.get('id');
-			return this.data[i.slice(1)]; // remove the 'i' from the id
+		_findItem: function(controlId) {
+			return this.data[controlId.slice(1)]; // remove the 'i' from the id
 		},
 		_handleTyping: function(o) { //TODO: WTF 'this' is comming wrong????
 			arguments[1].currentFilter = o.target.get('value');
@@ -2942,7 +2982,9 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 	// mandatory therefore it shouldn't be inside the obj
 	var mySmartCombo = new SmartCombo({
 		contentBox: '#core-control',
-		data: myData
+		data: myData,
+		showSelectedOnlyFilter: true,
+		showClearSelectionFilter: true
 	});
 	mySmartCombo.render();
 });
