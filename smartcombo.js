@@ -17,8 +17,9 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 	}
 
 	SmartCombo.NAME = "smartcombo";
-	SmartCombo.INPUT_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, "searchBox");
-	SmartCombo.RESULT_CONTAINER_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, "resultBox");
+	SmartCombo.INPUT_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'searchBox');
+	SmartCombo.RESULT_CONTAINER_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox');
+	SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'hidden');
 	SmartCombo.INPUT_TEMPLATE = '<input type="text" class="' + SmartCombo.INPUT_CLASS + '">';
 	SmartCombo.RESULT_CONTAINER_TEMPLATE = '<div class="' + SmartCombo.RESULT_CONTAINER_CLASS + '"><ol><li>default</li></ol></div>';
 
@@ -88,8 +89,9 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 
 			this._animHide = new Y.Anim({
 				node: this.resultBox,
-				to: { height: 0 },
-				easing: Y.Easing.backIn
+				to: { height: 0,
+			              duration: 0.1
+			       }
 			});
 		},
 		bindUI: function() {
@@ -136,13 +138,13 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 			arguments[1]._renderItens();
 
 			if (arguments[1].currentFilter.length > 0 && !arguments[1].resultBoxVisible) { 
-				this.resultBoxVisible = true;
+				arguments[1].resultBoxVisible = true;
+				arguments[1].resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			}
 
 			if (0 == arguments[1].currentFilter.length && arguments[1].resultBoxVisible) {
 				arguments[1].resultBoxVisible = false;
-				console.log('hiding');
-				arguments[1]._animHide.run();
+				arguments[1].resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			}
 
 		}
