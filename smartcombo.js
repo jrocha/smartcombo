@@ -171,7 +171,6 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 			var clickedId = o.target.get('id'),
 				clickedItem;
 
-
 			if ('selectedOnlyFilter' == clickedId) { // action to control
 				this.showSelectedOnly = !this.showSelectedOnly;
 			} else if ('clearSelectionFilter' == clickedId) {
@@ -196,7 +195,7 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 		_findItem: function(controlId) {
 			return this.data[controlId.slice(1)]; // remove the 'i' from the id
 		},
-		_handleTyping: function(o) { //TODO: WTF 'this' is comming wrong????
+		_handleTyping: function(o) { //TODO: WTF 'this' is comming wrong???? - Ticket #2528365
 			arguments[1].currentFilter = o.target.get('value');
 
 			arguments[1]._renderItens();
