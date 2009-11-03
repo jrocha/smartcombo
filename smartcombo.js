@@ -108,13 +108,13 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 		syncUI: function() {
 			this._renderItens();
 		},
-		_getHtml: function() {
-			var buffer = [],
-				searchFilter = new RegExp(this.currentFilter, 'gi'); //TODO: need to escape this.currentFilter before apply RegExp
+		_addControlActionsHtml: function(buffer) {
 
-			buffer[buffer.length] = '<ul>';
+			var hasAction;
 
 			if (this.showSelectedOnlyFilter || this.showSelectedOnly) {
+				hasAction = true;
+
 				buffer[buffer.length] = '<li id="selectedOnlyFilter" class="';
 				if (this.showSelectedOnly) {
 					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_SELECTED_CLASS;
@@ -126,12 +126,27 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 
 
 			if (this.showClearSelectionFilter) {
+				hasAction = true;
+
 				buffer[buffer.length] = '<li id="clearSelectionFilter" class="';
 					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS;
 				buffer[buffer.length] = '">Clear selection</li>';
 			}
 
-			buffer[buffer.length] = '<hr />'
+			if (hasAction) {
+				buffer[buffer.length] = '<hr />'
+			}
+
+			return buffer;
+
+		},
+		_getHtml: function() {
+			var buffer = [],
+				searchFilter = new RegExp(this.currentFilter, 'gi'); //TODO: need to escape this.currentFilter before apply RegExp
+
+			buffer[buffer.length] = '<ul>';
+
+			this._addControlActionsHtml(buffer);
 
 			for (var i = 0, k = this.data.length; i < k; i += 1) { //TODO: if should be before the iteration for performance  
 				
