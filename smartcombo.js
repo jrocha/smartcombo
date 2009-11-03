@@ -104,10 +104,13 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 			this._renderItens();
 		},
 		_getHtml: function() {
-			var buffer = [];
+			var buffer = [],
+				searchFilter = new RegExp(this.currentFilter, 'gi'); //TODO: need to escape this.currentFilter before apply RegExp
+
 			buffer[buffer.length] = '<ul>';
 			for (var i = 0, k = this.data.length; i < k; i += 1) { //TODO: if should be before the iteration for performance  
-				if (this.data[i].label.indexOf(this.currentFilter) > -1 || '' == this.currentFilter) {
+				
+				if (searchFilter.test(this.data[i].label)) {
 					buffer[buffer.length] = '<li id="i' + i + '" class="';
 					if (this.data[i].checked) {
 						buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_SELECTED_CLASS;
