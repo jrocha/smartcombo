@@ -97,7 +97,7 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 			this._animHide = new Y.Anim({
 				node: this.resultBox,
 				to: { height: 0,
-			              duration: 0.1
+			          duration: 0.1
 			       }
 			});
 		},
@@ -164,6 +164,7 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 				}
 			}
 			buffer[buffer.length] = '</ul>';
+
 			return buffer.join('');
 		},
 		_handleClick: function(o) {
