@@ -1,5 +1,5 @@
 /*globals YUI*/
-YUI().use('widget', 'node','node-menunav', 'event-key', 'anim', function(Y) {
+YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
