@@ -172,6 +172,7 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 				this._renderItens();
 			} else if ('clearSelectionFilter' == clickedId) {
 				this._unselectItens();
+				this.showSelectedOnly = false;
 				this._renderItens();
 			} else if ('i' == clickedId[0]) { // change item CSS perform better than update the entire innerHTML
 				o.target.toggleClass( SmartCombo.RESULT_CONTAINER_SELECTED_CLASS );
@@ -207,6 +208,10 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 				this._resultBoxVisible = false;
 				this._resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			
+			}
+			if (40 /* Down */  == o.keyCode && !this._resultBoxVisible) {
+				this._resultBoxVisible = true;
+				this._resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			}
 		},
 		_escapeString: (function(s) {
