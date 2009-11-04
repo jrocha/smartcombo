@@ -112,7 +112,7 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		},
 		bindUI: function() {
 			Y.on('click', this._handleClick, this.resultBox, this);
-			Y.on('keyup', this._handleTyping, this.searchBox, '', this);
+			Y.on('keyup', this._handleTyping, this.searchBox, this);
 		},
 		syncUI: function() {
 			this._renderItens();
@@ -204,19 +204,20 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		_findItem: function(controlId) {
 			return this.data[controlId.slice(1)]; // remove the 'i' from the id
 		},
-		_handleTyping: function(o) { //TODO: WTF 'this' is comming wrong???? - Ticket #2528365
-			arguments[1].currentFilter = o.target.get('value');
+		_handleTyping: function(o) { 
+			this.currentFilter = o.target.get('value');
 
-			arguments[1]._renderItens();
+			this._renderItens();
 
-			if (arguments[1].currentFilter.length > 0 && !arguments[1].resultBoxVisible) { 
-				arguments[1].resultBoxVisible = true;
-				arguments[1].resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+			if (this.currentFilter.length > 0 && !this.resultBoxVisible) { 
+				this.resultBoxVisible = true;
+				this.resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			}
 
-			if (0 == arguments[1].currentFilter.length && arguments[1].resultBoxVisible) {
-				arguments[1].resultBoxVisible = false;
-				arguments[1].resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+			if (0 == this.currentFilter.length && this.resultBoxVisible) {
+				this.resultBoxVisible = false;
+				this.resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+			
 			}
 
 		}
