@@ -1,5 +1,5 @@
 /*globals YUI*/
-YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
+YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', 'anim', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
@@ -28,7 +28,7 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 	SmartCombo.RESULT_CONTAINER_SELECTED_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'itemselected');
 	SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'itemunselected');
 	SmartCombo.INPUT_TEMPLATE = '<input type="text" class="' + SmartCombo.INPUT_CLASS + '">';
-	SmartCombo.RESULT_CONTAINER_TEMPLATE = '<div class="' + SmartCombo.RESULT_CONTAINER_CLASS + '"><ol><li>default</li></ol></div>';
+	SmartCombo.RESULT_CONTAINER_TEMPLATE = '<div class="' + SmartCombo.RESULT_CONTAINER_CLASS + '"></div>';
 
 
 	
@@ -93,6 +93,15 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 				this.resultBox = Node.create(SmartCombo.RESULT_CONTAINER_TEMPLATE);
 				contentBox.appendChild(this.resultBox);
 			}
+
+			this._resultBoxOverlay = new Y.Overlay({
+				contentBox: this.resultBox,
+				visible: true,
+				width: '20em'
+			});
+
+			this._resultBoxOverlay.align(this.searchBox, [Y.WidgetPositionExt.TL, Y.WidgetPositionExt.BL]);
+			this._resultBoxOverlay.render(contentBox);
 
 			this._animHide = new Y.Anim({
 				node: this.resultBox,
@@ -189,7 +198,7 @@ YUI().use('widget', 'node', 'event-key', 'anim', function(Y) {
 			}
 		},
 		_renderItens: function() {
-			Y.one(this.resultBox).set('innerHTML', this._getHtml());
+			this._resultBoxOverlay.set('bodyContent', this._getHtml());;
 			
 		},
 		_findItem: function(controlId) {
