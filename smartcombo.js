@@ -1,5 +1,5 @@
 /*globals YUI*/
-YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', 'anim', function(Y) {
+YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
@@ -103,12 +103,6 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 			this._resultBoxOverlay.align(this.searchBox, [Y.WidgetPositionExt.TL, Y.WidgetPositionExt.BL]);
 			this._resultBoxOverlay.render(contentBox);
 
-			this._animHide = new Y.Anim({
-				node: this.resultBox,
-				to: { height: 0,
-			          duration: 0.1
-			       }
-			});
 		},
 		bindUI: function() {
 			Y.on('click', this._handleClick, this.resultBox, this);
