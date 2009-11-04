@@ -148,7 +148,7 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		},
 		_getHtml: function() {
 			var buffer = [],
-				searchFilter = new RegExp(this.currentFilter, 'gi'); //TODO: need to escape this.currentFilter before apply RegExp
+				searchFilter = new RegExp(this._escapeString(this.currentFilter), 'gi'); //TODO: need to escape this.currentFilter before apply RegExp
 
 			buffer[buffer.length] = '<ul>';
 
@@ -218,7 +218,12 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 				this.resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			
 			}
+		},
+		_escapeString: function(s) {
+			var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\' ],
+				re = new RegExp('(\\' + specials.join('|\\') + ')', 'g'); 
 
+			return s.replace(re, '\\$1');
 		}
 			       
 	});
