@@ -124,22 +124,19 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 			if (this.showSelectedOnlyFilter || this.showSelectedOnly) {
 				hasAction = true;
 
-				buffer[buffer.length] = '<li id="selectedOnlyFilter" class="';
+				buffer[buffer.length] = '<li id="selectedOnlyFilter" ';
 				if (this.showSelectedOnly) {
+					buffer[buffer.length] = 'class="';
 					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_SELECTED_CLASS;
-				} else {
-					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS;
-				}
-				buffer[buffer.length] = '">Show selected only</li>';
+					buffer[buffer.length] = '"';
+				} 
+				buffer[buffer.length] = '>Show selected only</li>';
 			}
 
 
 			if (this.showClearSelectionFilter) {
 				hasAction = true;
-
-				buffer[buffer.length] = '<li id="clearSelectionFilter" class="';
-					buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS;
-				buffer[buffer.length] = '">Clear selection</li>';
+				buffer[buffer.length] = '<li id="clearSelectionFilter">Clear selection</li>';
 			}
 
 			if (hasAction) {
@@ -157,16 +154,16 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 
 			this._addControlActionsHtml(buffer);
 
-			for (var i = 0, k = this.data.length; i < k; i += 1) { //TODO: if should be before the iteration for performance  
+			for (var i = 0, k = this.data.length; i < k; i += 1) { 
 				
 				if (searchFilter.test(this.data[i].label) && ( !this.showSelectedOnly || this.data[i].checked ) ) {
-					buffer[buffer.length] = '<li id="i' + i + '" class="';
+					buffer[buffer.length] = '<li id="i' + i + '" ';
 					if (this.data[i].checked) {
+						buffer[buffer.length] = 'class="';
 						buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_SELECTED_CLASS;
-					} else {
-						buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS;
-					}
-					buffer[buffer.length] = '">';
+						buffer[buffer.length] = '"';
+					} 
+					buffer[buffer.length] = '>';
 
 					buffer[buffer.length] = this.data[i].label;
 					buffer[buffer.length] = '</li>';
@@ -180,17 +177,19 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 			var clickedId = o.target.get('id'),
 				clickedItem;
 
-			if ('selectedOnlyFilter' == clickedId) { // action to control
+			if ('selectedOnlyFilter' == clickedId) { 
 				this.showSelectedOnly = !this.showSelectedOnly;
+				this._renderItens();
 			} else if ('clearSelectionFilter' == clickedId) {
 				this._unselectItens();
-			} else if ('i' == clickedId[0]) {
+				this._renderItens();
+			} else if ('i' == clickedId[0]) { // change item CSS perform better than update the entire innerHTML
+				o.target.toggleClass( SmartCombo.RESULT_CONTAINER_SELECTED_CLASS );
+
 				clickedItem = this._findItem(clickedId);
 				clickedItem.checked = !clickedItem.checked;
 			}
 
-
-			this._renderItens();
 		},
 		_unselectItens: function() {
 			for (var i = 0, max = this.data.length; i < max; i += 1) {
