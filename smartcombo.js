@@ -1,4 +1,4 @@
-/*globals YUI*/
+/*globals YUI*/;
 YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
@@ -15,17 +15,17 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 
 		this.showClearSelectionFilter = config.showClearSelectionFilter;
 	
-		this.searchBox = config.value.preInput;
-		this.resultBox =  config.value.preResult;
+		this._searchBox = config.value.preInput;
+		this._resultBox =  config.value.preResult;
 
-		this.resultBoxVisible = true;
+		this._resultBoxVisible = true;
 	}
 
 	SmartCombo.NAME = "smartcombo";
 	SmartCombo.INPUT_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'searchBox');
 	SmartCombo.RESULT_CONTAINER_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox');
 	SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'hidden');
-	SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'itemunselected');
+	SmartCombo.RESULT_CONTAINER_SELECTED_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'itemselected');
 	SmartCombo.INPUT_TEMPLATE = '<input type="text" class="' + SmartCombo.INPUT_CLASS + '">';
 	SmartCombo.RESULT_CONTAINER_TEMPLATE = '<div class="' + SmartCombo.RESULT_CONTAINER_CLASS + '"></div>';
 
@@ -80,29 +80,29 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		renderUI: function() {
 			var contentBox = this.get('contentBox');
 
-			if (!this.searchBox) {
-				this.searchBox = Node.create(SmartCombo.INPUT_TEMPLATE);
-				contentBox.appendChild(this.searchBox);
+			if (!this._searchBox) {
+				this._searchBox = Node.create(SmartCombo.INPUT_TEMPLATE);
+				contentBox.appendChild(this._searchBox);
 			}
 
-			if (!this.resultBox) {
-				this.resultBox = Node.create(SmartCombo.RESULT_CONTAINER_TEMPLATE);
-				contentBox.appendChild(this.resultBox);
+			if (!this._resultBox) {
+				this._resultBox = Node.create(SmartCombo.RESULT_CONTAINER_TEMPLATE);
+				contentBox.appendChild(this._resultBox);
 			}
 
 			this._resultBoxOverlay = new Y.Overlay({
-				contentBox: this.resultBox,
+				contentBox: this._resultBox,
 				visible: true,
 				width: '20em'
 			});
 
-			this._resultBoxOverlay.align(this.searchBox, [Y.WidgetPositionExt.TL, Y.WidgetPositionExt.BL]);
+			this._resultBoxOverlay.align(this._searchBox, [Y.WidgetPositionExt.TL, Y.WidgetPositionExt.BL]);
 			this._resultBoxOverlay.render(contentBox);
 
 		},
 		bindUI: function() {
-			Y.on('click', this._handleClick, this.resultBox, this);
-			Y.on('keyup', this._handleTyping, this.searchBox, this);
+			Y.on('click', this._handleClick, this._resultBox, this);
+			Y.on('keyup', this._handleTyping, this._searchBox, this);
 		},
 		syncUI: function() {
 			this._renderItens();
@@ -198,14 +198,14 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 
 			this._renderItens();
 
-			if (this.currentFilter.length > 0 && !this.resultBoxVisible) { 
-				this.resultBoxVisible = true;
-				this.resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+			if (this.currentFilter.length > 0 && !this._resultBoxVisible) { 
+				this._resultBoxVisible = true;
+				this._resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			}
 
-			if (0 == this.currentFilter.length && this.resultBoxVisible) {
-				this.resultBoxVisible = false;
-				this.resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+			if (0 == this.currentFilter.length && this._resultBoxVisible) {
+				this._resultBoxVisible = false;
+				this._resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			
 			}
 		},
@@ -215,7 +215,7 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 
 				return function(s) {
 					return s.replace(re, '\\$1');
-				}
+				};
 		}())
 			       
 	});
