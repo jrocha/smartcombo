@@ -25,7 +25,6 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 	SmartCombo.INPUT_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'searchBox');
 	SmartCombo.RESULT_CONTAINER_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox');
 	SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'hidden');
-	SmartCombo.RESULT_CONTAINER_SELECTED_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'itemselected');
 	SmartCombo.RESULT_CONTAINER_UNSELECTED_CLASS = Y.ClassNameManager.getClassName(SmartCombo.NAME, 'resultBox', 'itemunselected');
 	SmartCombo.INPUT_TEMPLATE = '<input type="text" class="' + SmartCombo.INPUT_CLASS + '">';
 	SmartCombo.RESULT_CONTAINER_TEMPLATE = '<div class="' + SmartCombo.RESULT_CONTAINER_CLASS + '"></div>';
@@ -35,9 +34,6 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
     /* 
      * The HTML_PARSER static constant is used by the Widget base class to populate 
      * the configuration for the spinner instance from markup already on the page.
-     *
-     * The Spinner class attempts to set the value of the spinner widget if it
-     * finds the appropriate input element on the page.
      */
     SmartCombo.HTML_PARSER = {
         value: function (contentBox) {
@@ -142,7 +138,7 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		},
 		_getHtml: function() {
 			var buffer = [],
-				searchFilter = new RegExp(this._escapeString(this.currentFilter), 'gi'); //TODO: need to escape this.currentFilter before apply RegExp
+				searchFilter = new RegExp(this._escapeString(this.currentFilter), 'gi'); 
 
 			buffer[buffer.length] = '<ul>';
 
@@ -213,12 +209,14 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 			
 			}
 		},
-		_escapeString: function(s) {
+		_escapeString: (function(s) {
 			var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\' ],
 				re = new RegExp('(\\' + specials.join('|\\') + ')', 'g'); 
 
-			return s.replace(re, '\\$1');
-		}
+				return function(s) {
+					return s.replace(re, '\\$1');
+				}
+		}())
 			       
 	});
 	var myData = [{
