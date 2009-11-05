@@ -138,8 +138,9 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		},
 		_getHtml: function() {
 			var buffer = [],
-				searchFilter = new RegExp(this._escapeString(this.currentFilter), 'gi'),
-				_addItem = function(i) { //TODO: how can I get smartcombo intance over here without using apply?
+				searchFilter = new RegExp('(' + this._escapeString(this.currentFilter) + ')', 'gi'),
+
+				_addItem = function(i, sLabel) { //TODO: how can I get smartcombo intance over here without using apply?
 
 					buffer[buffer.length] = '<li id="i' + i + '" ';
 					if (this.data[i].checked) {
@@ -149,7 +150,12 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 					} 
 					
 					buffer[buffer.length] = '>';
-					buffer[buffer.length] = this.data[i].label;
+
+					if (sLabel) {
+						buffer[buffer.length] = sLabel;
+					} else {
+						buffer[buffer.length] = this.data[i].label;
+					}
 					buffer[buffer.length] = '</li>';
 				},
 				_addSelectedItens = function() {
@@ -160,10 +166,18 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 					}
 				},
 				_addFilteredItens = function() {
+					var highlightedItem;
 					for (var i = 0, k = this.data.length; i < k; i += 1) { 
+
 						if (searchFilter.test(this.data[i].label) ) {
-							_addItem.apply(this, [i]);
+							highlightedItem = this.data[i].label.replace(searchFilter, '<strong>$1</strong>');
+							_addItem.apply(this, [i, highlightedItem]);
 						}
+					}
+				},
+				_addAllItens = function() {
+					for (var i = 0, k = this.data.length; i < k; i += 1) { 
+						_addItem.apply(this, [i]);
 					}
 				}; 
 
@@ -172,10 +186,11 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 
 			if (this.showSelectedOnly) {
 				_addSelectedItens.apply(this);
-			} else {
+			} else if (this.currentFilter) {
 				_addFilteredItens.apply(this);
+			} else {
+				_addAllItens.apply(this);
 			}
-
 			buffer[buffer.length] = '</ul>';
 
 			return buffer.join('');
