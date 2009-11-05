@@ -138,27 +138,44 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		},
 		_getHtml: function() {
 			var buffer = [],
-				searchFilter = new RegExp(this._escapeString(this.currentFilter), 'gi'); 
+				searchFilter = new RegExp(this._escapeString(this.currentFilter), 'gi'),
+				_addItem = function(i) { //TODO: how can I get smartcombo intance over here without using apply?
 
-			buffer[buffer.length] = '<ul>';
-
-			this._addControlActionsHtml(buffer);
-
-			for (var i = 0, k = this.data.length; i < k; i += 1) { 
-				
-				if (searchFilter.test(this.data[i].label) && ( !this.showSelectedOnly || this.data[i].checked ) ) {
 					buffer[buffer.length] = '<li id="i' + i + '" ';
 					if (this.data[i].checked) {
 						buffer[buffer.length] = 'class="';
 						buffer[buffer.length] = SmartCombo.RESULT_CONTAINER_SELECTED_CLASS;
 						buffer[buffer.length] = '"';
 					} 
+					
 					buffer[buffer.length] = '>';
-
 					buffer[buffer.length] = this.data[i].label;
 					buffer[buffer.length] = '</li>';
-				}
+				},
+				_addSelectedItens = function() {
+					for (var i = 0, k = this.data.length; i < k; i += 1) { 
+						if (this.data[i].checked) {
+							_addItem.apply(this, [i]);
+						}
+					}
+				},
+				_addFilteredItens = function() {
+					for (var i = 0, k = this.data.length; i < k; i += 1) { 
+						if (searchFilter.test(this.data[i].label) ) {
+							_addItem.apply(this, [i]);
+						}
+					}
+				}; 
+
+			buffer[buffer.length] = '<ul>';
+			this._addControlActionsHtml(buffer);
+
+			if (this.showSelectedOnly) {
+				_addSelectedItens.apply(this);
+			} else {
+				_addFilteredItens.apply(this);
 			}
+
 			buffer[buffer.length] = '</ul>';
 
 			return buffer.join('');
