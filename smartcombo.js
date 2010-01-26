@@ -1,5 +1,5 @@
 /*globals YUI*/;
-YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', function(Y) {
+YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', 'event-focus', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
@@ -39,7 +39,7 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
         value: function (contentBox) {
             var nodeInput = contentBox.one("." + SmartCombo.INPUT_CLASS);
             var nodeResult = contentBox.one("." + SmartCombo.RESULT_CONTAINER_CLASS);
-	    
+
 			var preExisting = {
 			   preInput: nodeInput,
 			   preResultBox: nodeResult
@@ -78,16 +78,16 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
          *
          */
 		renderUI: function() {
-			var contentBox = this.get('contentBox');
+			this.contentBox = this.get('contentBox');
 
 			if (!this._searchBox) {
 				this._searchBox = Node.create(SmartCombo.INPUT_TEMPLATE);
-				contentBox.appendChild(this._searchBox);
+				this.contentBox.appendChild(this._searchBox);
 			}
 
 			if (!this._resultBox) {
 				this._resultBox = Node.create(SmartCombo.RESULT_CONTAINER_TEMPLATE);
-				contentBox.appendChild(this._resultBox);
+				this.contentBox.appendChild(this._resultBox);
 			}
 
 			this._resultBoxOverlay = new Y.Overlay({
@@ -97,15 +97,25 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 			});
 
 			this._resultBoxOverlay.align(this._searchBox, [Y.WidgetPositionExt.TL, Y.WidgetPositionExt.BL]);
-			this._resultBoxOverlay.render(contentBox);
+			this._resultBoxOverlay.render(this.contentBox);
 
 		},
 		bindUI: function() {
 			Y.on('click', this._handleClick, this._resultBox, this);
 			Y.on('keyup', this._handleTyping, this._searchBox, this);
+			Y.on('focus', this._handleFocus, this.contentBox, this);
+			Y.on('blur', this._handleBlur, this.contextBox, this);
 		},
 		syncUI: function() {
 			this._renderItens();
+		},
+		_handleFocus: function(e) {
+			this._resultBoxVisible = true;
+			this._resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+		},
+		_handleBlur: function(e) {
+			this._resultBoxVisible = false;
+			this._resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 		},
 		_addControlActionsHtml: function(buffer) {
 
@@ -196,8 +206,17 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 			return buffer.join('');
 		},
 		_handleClick: function(o) {
-			var clickedId = o.target.get('id'),
-				clickedItem;
+			var clickedId,
+				clickedItem,
+				clickedElement;
+
+			clickedElement = o.target;
+			if ('STRONG' == clickedElement.get('tagName')) {
+				clickedElement = clickedElement.get('parentNode');
+			}
+
+			clickedId = clickedElement.get('id');
+
 
 			if ('selectedOnlyFilter' == clickedId) { 
 				this.showSelectedOnly = !this.showSelectedOnly;
@@ -207,7 +226,7 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 				this.showSelectedOnly = false;
 				this._renderItens();
 			} else if ('i' == clickedId[0]) { // change item CSS perform better than update the entire innerHTML
-				o.target.toggleClass( SmartCombo.RESULT_CONTAINER_SELECTED_CLASS );
+				clickedElement.toggleClass( SmartCombo.RESULT_CONTAINER_SELECTED_CLASS );
 
 				clickedItem = this._findItem(clickedId);
 				clickedItem.checked = !clickedItem.checked;
