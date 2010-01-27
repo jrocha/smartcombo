@@ -33,11 +33,11 @@
 <div id="doc" class="yui-t7">
 	<div id="hd" role="banner"><h1>SmartCombo</h1></div>
 	<div id="bd" role="main">
+		<div id="myTestDiv"> other to click ...............................
+		</div>
 		<div class="yui-g">
 			<div id="core-control"><input type="text" class="yui-smartcombo-searchBox"></input></div>
 			TESTE 123
-		</div>
-		<div > other to click ..................................
 		</div>
 	</div>
 	<div id="ft" role="contentinfo"></div>
@@ -63,7 +63,23 @@
 -->
 
 <script src="http://yui.yahooapis.com/3.0.0/build/yui/yui-min.js"></script>
-<script type="text/javascript" src="smartcombo.js"></script>
+<script type="text/javascript" src="smartcombo.js"></script> 
 
+<script type="text/javascript"> 
+	YUI().use("node", function(Y) {
+
+    var node = Y.one('#myTestDiv');
+ 
+    var onClick = function(e) {
+        var tag = e.target.get('parentNode.tagName'); // e.target === node || #demo p em
+        e.currentTarget.setContent('I am a child of ' + tag + '.'); // e.currentTarget === node
+    };
+ 
+	Y.on('focus', onClick, '#myTestDiv');
+}
+)
+ 
+
+</script>
 </body>
 </html>

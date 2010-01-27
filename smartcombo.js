@@ -1,8 +1,12 @@
 /*globals YUI*/;
-YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', 'event-focus', function(Y) {
+YUI({filter: 'debug', debug: true}).use('console', 'overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', 'event-focus', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
+
+		
+	new Y.Console().render(); 
+
 
 	function SmartCombo(config) {
 		SmartCombo.superclass.constructor.apply(this, arguments);
@@ -103,19 +107,20 @@ YUI().use('overlay', 'widget', 'widget-position', 'widget-position-ext','widget-
 		bindUI: function() {
 			Y.on('click', this._handleClick, this._resultBox, this);
 			Y.on('keyup', this._handleTyping, this._searchBox, this);
-			Y.on('focus', this._handleFocus, this.contentBox, this);
-			Y.on('blur', this._handleBlur, this.contextBox, this);
+			this.on('focusedChange', this._handleFocusChange);
+
 		},
 		syncUI: function() {
 			this._renderItens();
 		},
-		_handleFocus: function(e) {
-			this._resultBoxVisible = true;
-			this._resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
-		},
-		_handleBlur: function(e) {
-			this._resultBoxVisible = false;
-			this._resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+		_handleFocusChange: function(e) {
+			if (e.newVal) {
+				this._resultBoxVisible = true;
+				this._resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+			} else {
+				this._resultBoxVisible = false;
+				this._resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
+			}
 		},
 		_addControlActionsHtml: function(buffer) {
 
