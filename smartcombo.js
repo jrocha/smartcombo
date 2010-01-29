@@ -1,5 +1,5 @@
 /*globals YUI*/;
-YUI({filter: 'debug', debug: true}).use('console', 'overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', 'event-focus', function(Y) {
+YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widget-position-ext','widget-stack', 'node', 'event-key', 'event-focus', function(Y) {
 	var Lang = Y.Lang,
 		Widget = Y.Widget,
 		Node = Y.Node;
@@ -12,7 +12,19 @@ YUI({filter: 'debug', debug: true}).use('console', 'overlay', 'widget', 'widget-
 		SmartCombo.superclass.constructor.apply(this, arguments);
 
 		this.currentFilter = '';
-		this.data = config.data;
+		config.dataSource.sendRequest(null,
+				{
+					success: function(e) {
+						that = e.callback.argument;
+						that.data = e.response.results; 
+					},
+					failure: function(e) { 
+						alert(e.response);
+					},
+					argument: this
+				}
+			);
+		//this.data = config.data;
 
 		this.showSelectedOnly = config.showSelectedOnly;
 		this.showSelectedOnlyFilter = config.showSelectedOnlyFilter;
@@ -244,7 +256,9 @@ YUI({filter: 'debug', debug: true}).use('console', 'overlay', 'widget', 'widget-
 			}
 		},
 		_renderItens: function() {
-			this._resultBoxOverlay.set('bodyContent', this._getHtml());;
+			if (this.data) {
+				this._resultBoxOverlay.set('bodyContent', this._getHtml());
+			}
 			
 		},
 		_findItem: function(controlId) {
@@ -3059,14 +3073,19 @@ YUI({filter: 'debug', debug: true}).use('console', 'overlay', 'widget', 'widget-
 	
 
 	];
+
+	var myDataSource = new Y.DataSource.Local({source: myData});
+
 	// we should use a config obj only for extra settings
 	// the HTML el in which the combo will be deplyed is
 	// mandatory therefore it shouldn't be inside the obj
 	var mySmartCombo = new SmartCombo({
 		contentBox: '#core-control',
-		data: myData,
+		dataSource: myDataSource,
 		showSelectedOnlyFilter: true,
 		showClearSelectionFilter: true
 	});
+
+
 	mySmartCombo.render();
 });
