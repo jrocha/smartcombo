@@ -275,7 +275,7 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 			this._delayedRender = setTimeout(function() {
 					that._renderItens();
 					that._delayedRender = null;
-			}, 250);
+			}, 190);
 
 			if (this.currentFilter.length > 0 && !this._resultBoxVisible) { 
 				this._resultBoxVisible = true;
