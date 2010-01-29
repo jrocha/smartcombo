@@ -24,7 +24,6 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 					argument: this
 				}
 			);
-		//this.data = config.data;
 
 		this.showSelectedOnly = config.showSelectedOnly;
 		this.showSelectedOnlyFilter = config.showSelectedOnlyFilter;
@@ -265,9 +264,18 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 			return this.data[controlId.slice(1)]; // remove the 'i' from the id
 		},
 		_handleTyping: function(o) { 
+			var that = this;
 			this.currentFilter = o.target.get('value');
 
-			this._renderItens();
+			if (this._delayedRender) {
+				clearTimeout(this._delayedRender);
+				this._delayedRender = null;
+			}
+
+			this._delayedRender = setTimeout(function() {
+					that._renderItens();
+					that._delayedRender = null;
+			}, 250);
 
 			if (this.currentFilter.length > 0 && !this._resultBoxVisible) { 
 				this._resultBoxVisible = true;
