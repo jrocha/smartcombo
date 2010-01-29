@@ -281,12 +281,6 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 				this._resultBoxVisible = true;
 				this._resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
 			}
-
-			if (0 == this.currentFilter.length && this._resultBoxVisible) {
-				this._resultBoxVisible = false;
-				this._resultBox.addClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
-			
-			}
 			if (40 /* Down */  == o.keyCode && !this._resultBoxVisible) {
 				this._resultBoxVisible = true;
 				this._resultBox.removeClass(SmartCombo.RESULT_CONTAINER_HIDDEN_CLASS);
