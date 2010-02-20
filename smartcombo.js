@@ -17,7 +17,6 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 					success: function(e) {
 						that = e.callback.argument;
 						that.data = e.response.results; 
-						that._createSearchBuffer();
 					},
 					failure: function(e) { 
 						Y.log(e, "error", "smartcombo");
@@ -163,20 +162,6 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 			return buffer;
 
 		},
-
-		_createSearchBuffer: function() {
-			var buffer = [];
-
-			for (var i = 0, k = this.data.length; i < k; i += 1) { 
-				buffer[buffer.length] = '[';
-				buffer[buffer.length] = i;
-				buffer[buffer.length] = '|';
-				buffer[buffer.length] = this.data[i].label;
-				buffer[buffer.length] = ']';
-			}			
-
-			this._searchBuffer = buffer.join('');
-		},
 		_getHtml: function() {
 			var buffer = [],
 				searchFilter = new RegExp('(' + this._escapeString(this.currentFilter) + ')', 'gi'),
@@ -207,9 +192,6 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 					}
 				},
 				_addFilteredItens = function() {
-					Y.log('started _addFilteredItens', 'info', 'smartcombo');
-
-					/*
 					var highlightedItem;
 					for (var i = 0, k = this.data.length; i < k; i += 1) { 
 
@@ -218,20 +200,6 @@ YUI().use('datasource','console', 'overlay', 'widget', 'widget-position', 'widge
 							_addItem.apply(this, [i, highlightedItem]);
 						}
 					}
-					*/
-					var highlightedItem,
-						searchFilterX = new RegExp('\\[(\\d+)\\|[^\\]]*' + this._escapeString(this.currentFilter) + '.*?\\]', 'gi'), //   /\[(\d)\|[^\]]*item.*?\]/gi,
-						match,
-						k;
-
-
-					while (match = searchFilterX.exec(this._searchBuffer)) {
-						k = match[1];
-						highlightedItem = this.data[k].label.replace(searchFilter, '<strong>$1</strong>');
-						_addItem.apply(this, [k, highlightedItem]);
-					}
-
-					Y.log('ended _addFilteredItens', 'info', 'smartcombo');
 				},
 				_addAllItens = function() {
 					for (var i = 0, k = this.data.length; i < k; i += 1) { 
